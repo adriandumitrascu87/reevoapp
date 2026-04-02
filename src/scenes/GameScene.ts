@@ -2,36 +2,43 @@ import { Container, Graphics } from "pixi.js";
 import { app } from "../app";
 import { getCanvasPosition, getCanvasSize } from "../utils/screen";
 import { PALETTE } from "../settings/palette";
+import { ShapeSpawner } from "../spawner/ShapeSpawner";
 
 export class GameScene {
   mainContainer?: Container;
   backgroundContainer?: Container;
   gameContainer?: Container;
   uiContainer?: Container;
+  spawner?: ShapeSpawner;
 
   canvas?: Graphics;
 
   constructor() {
+    console.log('GameScene init - window:', window.innerWidth, window.innerHeight);
     this.initContainers();
     this.initProps();
+    this.addShapeSpawner();
     this.initEvents();
+  }
+
+  addShapeSpawner() {
+    if (!this.gameContainer) return;
+    this.spawner = new ShapeSpawner(this.gameContainer);
   }
 
   initEvents() {
     app.renderer.on("resize", this.handleResize);
   }
 
-  handleResize=()=> {
+  handleResize = () => {
     this.drawCanvas();
     this.centerMainContainer();
-  }
+  };
 
   //TODO to call
   public destroy() {
-
     app.renderer.off("resize", this.handleResize);
-    this.mainContainer?.destroy()
-
+    this.mainContainer?.destroy();
   }
 
   initContainers() {
