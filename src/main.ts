@@ -1,6 +1,6 @@
 import { app } from "./app";
 import { ShapeFactory } from "./factory/ShapeFactory";
-import "./global.css";
+import './global.css';
 import { GameScene } from "./scenes/GameScene";
 import { PALETTE } from "./settings/palette";
 
