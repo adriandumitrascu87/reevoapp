@@ -11,8 +11,7 @@ export class GameScene {
   uiContainer?: Container;
 
   spawner?: ShapeSpawner;
-
-  mask?:Graphics;
+  mask?: Graphics;
   canvas?: Graphics;
 
   constructor() {
@@ -29,19 +28,23 @@ export class GameScene {
   }
 
   initMask() {
-
-    const {width, height} = getCanvasSize();
-
+    const { width, height } = getCanvasSize();
     this.mask = new Graphics();
-    this.mask.rect(0,0, width, height);
+    this.mask.rect(0, 0, width, height);
     this.mask.fill(0xffffff);
-    
 
-    if(!this.gameContainer) return;
+    if (!this.gameContainer) return;
     this.gameContainer.mask = this.mask;
-    this.gameContainer.addChild(this.mask)
+    this.gameContainer.addChild(this.mask);
+  }
 
+  updateMask() {
+    if (!this.mask) return;
+    const { width, height } = getCanvasSize();
 
+    this.mask.clear();
+    this.mask.rect(0, 0, width, height);
+    this.mask.fill(0xffffff);
   }
 
   initEvents() {
@@ -51,6 +54,7 @@ export class GameScene {
   handleResize = () => {
     this.drawCanvas();
     this.centerMainContainer();
+    this.updateMask();
   };
 
   //TODO to call
