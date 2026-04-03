@@ -9,21 +9,39 @@ export class GameScene {
   backgroundContainer?: Container;
   gameContainer?: Container;
   uiContainer?: Container;
+
   spawner?: ShapeSpawner;
 
+  mask?:Graphics;
   canvas?: Graphics;
 
   constructor() {
-    console.log('GameScene init - window:', window.innerWidth, window.innerHeight);
     this.initContainers();
     this.initProps();
     this.addShapeSpawner();
+    this.initMask();
     this.initEvents();
   }
 
   addShapeSpawner() {
     if (!this.gameContainer) return;
     this.spawner = new ShapeSpawner(this.gameContainer);
+  }
+
+  initMask() {
+
+    const {width, height} = getCanvasSize();
+
+    this.mask = new Graphics();
+    this.mask.rect(0,0, width, height);
+    this.mask.fill(0xffffff);
+    
+
+    if(!this.gameContainer) return;
+    this.gameContainer.mask = this.mask;
+    this.gameContainer.addChild(this.mask)
+
+
   }
 
   initEvents() {
