@@ -1,7 +1,8 @@
-import { Container, FederatedPointerEvent, Sprite, Texture } from "pixi.js";
+import { FederatedPointerEvent, Sprite, Texture } from "pixi.js";
 import { getCanvasSize } from "../utils/screen";
 import { ShapeFactory } from "../factory/ShapeFactory";
 import { SETTINGS } from "../settings/settings";
+import { createIrregularTexture } from "../utils/shapesTexture";
 
 export class FallingShape extends Sprite {
   velocity: number = 0;
@@ -17,10 +18,12 @@ export class FallingShape extends Sprite {
   }
 
   private handleClick = (e: FederatedPointerEvent) => {
-    console.log("Click");
+    // console.log("listener count:", this.listenerCount("pointerdown"));
     if (!this.active) return;
     e.stopPropagation();
+    // console.log("emitting shapeClicked");
     this.emit("shapeClicked", this);
+    // console.log("emitted");
   };
 
   spawn() {
@@ -31,8 +34,15 @@ export class FallingShape extends Sprite {
     this.x = this.width / 2 + Math.random() * (width - this.width);
     this.y = -this.height / 2;
 
+    this.visible = true;
+    this.velocity = 0;
+    this.active = true;
+  }
 
-
+  public spawnAt(x: number, y: number): void {
+    this.texture = createIrregularTexture();
+    this.x = x;
+    this.y = y;
     this.visible = true;
     this.velocity = 0;
     this.active = true;
