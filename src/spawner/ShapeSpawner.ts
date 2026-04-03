@@ -30,6 +30,7 @@ export class ShapeSpawner {
   }
 
   private onShapeClicked = (shape: FallingShape): void => {
+    // console.log("emitted", shape);
     this.releaseShape(shape, this.activeShapes.indexOf(shape));
   };
 
@@ -42,7 +43,13 @@ export class ShapeSpawner {
   }
 
   private getShape(): FallingShape {
-    return this.pool.get() ?? this.createShape();
+    const shape = this.pool.get() ?? this.createShape();
+
+    //maybe
+    shape.off("shapeClicked", this.onShapeClicked);
+    shape.on("shapeClicked", this.onShapeClicked);
+
+    return shape;
   }
 
   update = (ticker: Ticker) => {
@@ -69,6 +76,12 @@ export class ShapeSpawner {
     this.activeShapes.push(shape);
   }
 
+  public spawnAtPosition(x: number, y: number): void {
+    const shape = this.getShape();
+    shape.spawnAt(x, y);
+    this.container.addChild(shape);
+    this.activeShapes.push(shape);
+  }
 
   //To do -> use it
   public destroy() {
