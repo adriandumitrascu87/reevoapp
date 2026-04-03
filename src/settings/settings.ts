@@ -4,10 +4,12 @@ export const SETTINGS = {
     vertical: 0.2,
   },
   poolSize: {
-    initialSize: 10,
+    initialSize: 1,
   },
-  gravity: 0.5,
+  shapeMinSize:75,
+  shapeMaxSize:150,
+  gravity: 0.05,
   maxFallSpeed:15,
-  spawnIntervalMS: 1,
-  shapeCacheSize: 20,
+  spawnIntervalMS: 1000,
+  shapeCacheSize: 200,
 } as const;
