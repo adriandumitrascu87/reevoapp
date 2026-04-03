@@ -1,31 +1,41 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, FederatedPointerEvent, Sprite, Texture } from "pixi.js";
 import { getCanvasSize } from "../utils/screen";
 import { ShapeFactory } from "../factory/ShapeFactory";
 import { SETTINGS } from "../settings/settings";
 
-export class FallingShape {
-  container: Container;
-  sprite!: Sprite;
+export class FallingShape extends Sprite {
   velocity: number = 0;
+  active: boolean = false;
 
-  constructor(sprite: Sprite, container: Container) {
-    this.sprite = sprite;
-    this.container = container;
-    this.container.addChild(this.sprite);
+  constructor() {
+    super();
+
+    this.anchor.set(0.5, 0.5);
+
+    this.eventMode = "static";
+    this.on("pointerdown", this.handleClick);
   }
+
+  private handleClick = (e: FederatedPointerEvent) => {
+    console.log("Click");
+    if (!this.active) return;
+    e.stopPropagation();
+    this.emit("shapeClicked", this);
+  };
 
   spawn() {
     const { width } = getCanvasSize();
 
-    this.sprite.texture = ShapeFactory.getRandomTexture();
+    this.texture = ShapeFactory.getRandomTexture();
+    // this.rotation = Math.random() * Math.PI * 2;
+    this.x = this.width / 2 + Math.random() * (width - this.width);
+    this.y = -this.height / 2;
 
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.x =
-      this.sprite.width / 2 + Math.random() * (width - this.sprite.width);
-    this.sprite.y = -this.sprite.height / 2;
 
-    this.sprite.visible = true;
+
+    this.visible = true;
     this.velocity = 0;
+    this.active = true;
   }
 
   public update(): boolean {
@@ -34,9 +44,9 @@ export class FallingShape {
     const newVelocity = this.velocity + SETTINGS.gravity;
     this.velocity = Math.min(newVelocity, SETTINGS.maxFallSpeed);
 
-    this.sprite.y += this.velocity;
+    this.y += this.velocity;
 
-    if (this.sprite.y > height + this.sprite.height / 2) {
+    if (this.y > height + this.height / 2) {
       return true;
     }
 
@@ -45,7 +55,10 @@ export class FallingShape {
 
   //to do -> use it
 
-  public destroy(container: Container): void {
-    container.removeChild(this.sprite);
+  public reset(): void {
+    this.visible = false;
+    this.texture = Texture.EMPTY;
+    this.velocity = 0;
+    this.active = false;
   }
 }
