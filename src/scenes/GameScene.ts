@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, FederatedPointerEvent, Graphics } from "pixi.js";
 import { app } from "../app";
 import { getCanvasPosition, getCanvasSize } from "../utils/screen";
 import { PALETTE } from "../settings/palette";
@@ -49,7 +49,21 @@ export class GameScene {
 
   initEvents() {
     app.renderer.on("resize", this.handleResize);
+    if (!this.backgroundContainer) return;
+
+    this.backgroundContainer.on("pointerdown", this.handleClick);
+    this.backgroundContainer.eventMode = "static";
   }
+
+  handleClick = (e: FederatedPointerEvent) => {
+    if (!this.spawner || !this.backgroundContainer) return;
+
+    e.stopPropagation();
+    console.log("GameScene handleClick", e.target);
+    const local = this.backgroundContainer.toLocal(e.global);
+    this.spawner.spawnAtPosition(local.x, local.y);
+    console.log("click", e.x, e.y);
+  };
 
   handleResize = () => {
     this.drawCanvas();
