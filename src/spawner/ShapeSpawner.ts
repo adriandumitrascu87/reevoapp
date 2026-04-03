@@ -1,8 +1,6 @@
 import { Container, Ticker } from "pixi.js";
 import { ShapePool } from "../pool/ShapePool";
 import { app } from "../app";
-import { getCanvasSize } from "../utils/screen";
-import { ShapeFactory } from "../factory/ShapeFactory";
 import { SETTINGS } from "../settings/settings";
 import { FallingShape } from "../objects/FallingShape";
 
@@ -15,7 +13,36 @@ export class ShapeSpawner {
   constructor(container: Container) {
     this.container = container;
     this.pool = new ShapePool();
+    this.populatePool();
     app.ticker.add(this.update);
+  }
+
+  populatePool() {
+    for (let i = 0; i < SETTINGS.poolSize.initialSize; i++) {
+      this.pool.release(this.createShape());
+    }
+  }
+
+  private createShape(): FallingShape {
+    const shape = new FallingShape();
+    shape.on("shapeClicked", this.onShapeClicked);
+    return shape;
+  }
+
+  private onShapeClicked = (shape: FallingShape): void => {
+    this.releaseShape(shape, this.activeShapes.indexOf(shape));
+  };
+
+  private releaseShape(shape: FallingShape, index: number): void {
+    if (index === -1) return;
+    shape.reset();
+    this.container.removeChild(shape);
+    this.activeShapes.splice(index, 1);
+    this.pool.release(shape);
+  }
+
+  private getShape(): FallingShape {
+    return this.pool.get() ?? this.createShape();
   }
 
   update = (ticker: Ticker) => {
@@ -28,23 +55,20 @@ export class ShapeSpawner {
     this.moveShape();
   };
 
+  moveShape() {
+    for (let i = this.activeShapes.length - 1; i >= 0; i--) {
+      const shape = this.activeShapes[i];
+      if (shape.update()) this.releaseShape(shape, i);
+    }
+  }
+
   spawnShape() {
-    const sprite = this.pool.get();
-    const shape = new FallingShape(sprite, this.container);
+    const shape = this.getShape();
     shape.spawn();
+    this.container.addChild(shape);
     this.activeShapes.push(shape);
   }
 
-  moveShape() {
-    for (let i = this.activeShapes.length - 1; i >= 0; i--) {
-      const fallingShape = this.activeShapes[i];
-      const outOfContainer = fallingShape.update();
-      if (outOfContainer) {
-        this.pool.release(fallingShape.sprite);
-        this.activeShapes.splice(i, 1);
-      }
-    }
-  }
 
   //To do -> use it
   public destroy() {
