@@ -4,13 +4,14 @@ import { app } from "../app";
 import { getCanvasSize } from "../utils/screen";
 import { ShapeFactory } from "../factory/ShapeFactory";
 import { SETTINGS } from "../settings/settings";
+import { FallingShape } from "../objects/FallingShape";
 
 export class ShapeSpawner {
-  private readonly spawnIntervalMs = 1000;
   container: Container;
   pool: ShapePool;
   elapsed: number = 0;
-  activeShapes: any[] = [];
+  activeShapes: FallingShape[] = [];
+
   constructor(container: Container) {
     this.container = container;
     this.pool = new ShapePool();
@@ -28,37 +29,18 @@ export class ShapeSpawner {
   };
 
   spawnShape() {
-    const { width, height } = getCanvasSize();
-
     const sprite = this.pool.get();
-    const randomShapeTexture = ShapeFactory.getRandomTexture();
-    // sprite.anchor.set(0.5, 0.5);
-
-    sprite.texture = randomShapeTexture;
-
-    sprite.x = sprite.width/2 + Math.random() * (width - sprite.width);
-    sprite.y = -sprite.height/2;
-
-    sprite.visible = true;
-
-    this.container.addChild(sprite);
-    this.activeShapes.push({
-      sprite,
-      speed: SETTINGS.gravity,
-    });
+    const shape = new FallingShape(sprite, this.container);
+    shape.spawn();
+    this.activeShapes.push(shape);
   }
 
   moveShape() {
-    const { height } = getCanvasSize();
-
     for (let i = this.activeShapes.length - 1; i >= 0; i--) {
-      const { sprite, speed } = this.activeShapes[i];
-
-      sprite.y += speed;
-
-      if (sprite.y > height + sprite.height / 2) {
-        this.container.removeChild(sprite);
-        this.pool.release(sprite);
+      const fallingShape = this.activeShapes[i];
+      const outOfContainer = fallingShape.update();
+      if (outOfContainer) {
+        this.pool.release(fallingShape.sprite);
         this.activeShapes.splice(i, 1);
       }
     }
@@ -67,7 +49,7 @@ export class ShapeSpawner {
   //To do -> use it
   public destroy() {
     app.ticker.remove(this.update);
-    // this.activeShapes.forEach(
+    // this.activeShapes.forEach todo
     this.activeShapes = [];
   }
 }
