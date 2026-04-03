@@ -1,44 +1,24 @@
 import { Sprite, Texture } from "pixi.js";
 import { SETTINGS } from "../settings/settings";
+import { FallingShape } from "../objects/FallingShape";
 
 export class ShapePool {
-  private pool: Sprite[] = [];
+  private pool: FallingShape[] = [];
 
   constructor() {
-    this.createPool();
+    // this.createPool();
   }
 
-  createPool() {
-    for (let i = 0; i < SETTINGS.poolSize.initialSize; i++) {
-      this.pool.push(this.createShape());
-    }
+  // createPool() {
+
+  // }
+
+  public get(): FallingShape {
+    return this.pool.pop() ?? new FallingShape();
   }
 
-  createShape(): Sprite {
-    const s = new Sprite();
-    s.visible = false;
-    s.anchor.set(0.5, 0.5);
-
-    return s;
-  }
-
-  public get(): Sprite {
-    if (this.pool.length > 0) {
-      return this.pool.pop()!;
-    }
-
-    const sprite = this.createShape();
-    return sprite;
-  }
-
-  public release(sprite: Sprite) {
-    sprite.texture = Texture.EMPTY;
-    sprite.visible = false;
-    sprite.x = 0;
-    sprite.y = 0;
-    sprite.rotation = 0;
-    sprite.alpha = 1;
-    this.pool.push(sprite);
+  public release(shape: FallingShape): void {
+    this.pool.push(shape);
   }
 
   public get size(): number {
