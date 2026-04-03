@@ -6,7 +6,8 @@ export const SETTINGS = {
   poolSize: {
     initialSize: 10,
   },
-  gravity: 2,
+  gravity: 0.5,
+  maxFallSpeed:15,
   spawnIntervalMS: 1,
   shapeCacheSize: 20,
-};
+} as const;
