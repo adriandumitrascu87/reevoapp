@@ -1,9 +1,19 @@
-import { Graphics, Sprite, Texture } from "pixi.js";
+import { Graphics, Texture } from "pixi.js";
 import { ShapeConfig } from "../types/shape";
 import { app } from "../app";
 import { SETTINGS } from "../settings/settings";
-import { drawCircle, drawEllipse, drawRegularPolygon, drawStar } from "../utils/shapesTexture";
-
+import {
+  drawCircle,
+  drawEllipse,
+  drawRegularPolygon,
+  drawStar,
+} from "../utils/shapesTexture";
+import { getCanvasSize } from "../utils/screen";
+/**
+ * Handles shape texture creation and caching;
+ * Textures are generated at startup and on resize;
+ * FallingShapes pick randomly from the cache at runtime;
+ */
 export class ShapeFactory {
   private static cache: Texture[] = [];
   public static create(config: ShapeConfig): Texture {
@@ -23,16 +33,26 @@ export class ShapeFactory {
     return texture;
   }
 
+  // Regenerates the full texture cache; called at startup and on resize;
+  // Size is relative to canvas width so shapes scale with the screen;
   public static generateCache() {
+    //redone at resize
+    this.destroyCache();
+
+    const { width } = getCanvasSize();
+    const minSize = (SETTINGS.shapeMinSize / 100) * width;
+    const maxSize = (SETTINGS.shapeMaxSize / 100) * width;
+
     for (let i = 0; i < SETTINGS.shapeCacheSize; i++) {
       this.cache.push(
         this.create({
           color: Math.floor(Math.random() * 0xffffff),
-          size: SETTINGS.shapeMinSize + Math.random() * (SETTINGS.shapeMaxSize-SETTINGS.shapeMinSize),
+          size: minSize + Math.random() * (maxSize - minSize),
         }),
       );
     }
   }
+  // Returns a random texture from cache
   public static getRandomTexture(): Texture {
     if (this.cache.length == 0) {
       this.generateCache();
@@ -40,6 +60,7 @@ export class ShapeFactory {
     return this.cache[Math.floor(Math.random() * this.cache.length)];
   }
 
+  // Picks a random draw function from the available shape types
   private static getRandomDrawingFn(): (g: Graphics, size: number) => void {
     const fn = [
       (g: Graphics, size: number) => drawCircle(g, size),
@@ -54,10 +75,8 @@ export class ShapeFactory {
     return fn[Math.floor(Math.random() * fn.length)];
   }
 
-
-
-  //toDo - to use
-
+  
+  // destroys all cached textures and clears the cache  (call before regenerating)
   private static destroyCache() {
     this.cache.forEach((t) => t.destroy());
     this.cache = [];

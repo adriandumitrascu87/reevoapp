@@ -1,6 +1,9 @@
 import { app } from "../app";
 import { SETTINGS } from "../settings/settings";
 
+/**
+ * screen utility functions — all sizes are derived from app.screen
+ */
 export function getPadding(): { x: number; y: number } {
   return {
     x: app.screen.width * SETTINGS.padding.horizontal,
