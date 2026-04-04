@@ -1,7 +1,10 @@
 # Setup
 
+# Run
+```bash
 npm install
 npm run dev
+```
 
 
 # Configuration
@@ -22,4 +25,4 @@ The canvas is fully responsive - it recalculates size and position on every resi
 
 Shape area is calculated by reading pixel data from the rendered game container (no  geometry math or shapes overlaping).
 
-Shapes and textures are both pooled - (textrue poll is recreated at rezise to mentain the relative size of the shapes to the stage/scene)
+Shapes and textures are both pooled - (textrue poll is recreated at resize to mentain the relative size of the shapes to the stage/scene)
