@@ -1,11 +1,44 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="UFT-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Reevo test</title>
+    <link rel="stylesheet" href="./src/styles/ui.css" />
   </head>
   <body>
+    <div id="info-panel">
+      <div class="info-box">
+        <span class="info-label">SHAPES</span>
+        <span id="shapes-nr">0</span>
+      </div>
+      <div class="info-box">
+        <span class="info-label">AREA (px²)</span>
+        <span id="shapes-area">0</span>
+      </div>
+    </div>
+
+    <div id="controls-panel">
+      <div class="control-box">
+        <div class="control-row">
+          <button id="spawn-minus">-</button>
+          <span id="spawn-value">1</span>
+          <button id="spawn-plus">+</button>
+        </div>
+        <span class="control-label">SHAPES/SECOND</span>
+      </div>
+      <div id="gravity-panel" class="control-box">
+        <div class="control-row">
+          <button id="gravity-minus">-</button>
+          <span id="gravity-value">0.5</span>
+          <button id="gravity-plus">+</button>
+        </div>
+        <span class="control-label">GRAVITY VALUE</span>
+      </div>
+    </div>
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

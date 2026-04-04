@@ -1,3 +1,5 @@
+/* Global reset — removes default browser margin and padding. */
+
 html, body {
   margin: 0;
   padding: 0;
