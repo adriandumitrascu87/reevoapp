@@ -1,14 +1,21 @@
-import { Container, Ticker } from "pixi.js";
+import { Container, EventEmitter, Ticker } from "pixi.js";
 import { ShapePool } from "../pool/ShapePool";
 import { app } from "../app";
 import { SETTINGS } from "../settings/settings";
 import { FallingShape } from "../objects/FallingShape";
+import { getCanvasSize } from "../utils/screen";
+
+
+/**
+ * Manages shape spawning, movement and lifecycle.
+ */
 
 export class ShapeSpawner {
-  container: Container;
-  pool: ShapePool;
-  elapsed: number = 0;
-  activeShapes: FallingShape[] = [];
+ private  container: Container;
+ private  pool: ShapePool;
+ private  elapsed: number = 0;
+ private  activeShapes: FallingShape[] = [];
+ public emitter = new EventEmitter();
 
   constructor(container: Container) {
     this.container = container;
@@ -17,6 +24,7 @@ export class ShapeSpawner {
     app.ticker.add(this.update);
   }
 
+  // fills the pool at startup;
   populatePool() {
     for (let i = 0; i < SETTINGS.poolSize.initialSize; i++) {
       this.pool.release(this.createShape());
@@ -25,10 +33,10 @@ export class ShapeSpawner {
 
   private createShape(): FallingShape {
     const shape = new FallingShape();
-    shape.on("shapeClicked", this.onShapeClicked);
     return shape;
   }
 
+  // removes shape from active list and returns it to pool
   private onShapeClicked = (shape: FallingShape): void => {
     // console.log("emitted", shape);
     this.releaseShape(shape, this.activeShapes.indexOf(shape));
@@ -43,7 +51,7 @@ export class ShapeSpawner {
   }
 
   private getShape(): FallingShape {
-    const shape = this.pool.get() ?? this.createShape();
+    const shape = this.pool.get();
 
     //maybe
     shape.off("shapeClicked", this.onShapeClicked);
@@ -52,6 +60,8 @@ export class ShapeSpawner {
     return shape;
   }
 
+  // moves all active shapes and releases any that have fallen offscreen
+  // emits visible count after every update
   update = (ticker: Ticker) => {
     this.elapsed += ticker.deltaMS;
     if (this.elapsed >= SETTINGS.spawnIntervalMS) {
@@ -67,6 +77,20 @@ export class ShapeSpawner {
       const shape = this.activeShapes[i];
       if (shape.update()) this.releaseShape(shape, i);
     }
+
+    const count = this.checkVisibleCount();
+    this.emitInfo(count);
+  }
+
+  // counts shapes that are at least partially visible within the canvas bounds
+  checkVisibleCount(): number {
+    let count = 0;
+
+    for (const shape of this.activeShapes) {
+      if (this.isVisible(shape)) count++;
+    }
+
+    return count;
   }
 
   spawnShape() {
@@ -83,10 +107,21 @@ export class ShapeSpawner {
     this.activeShapes.push(shape);
   }
 
+  emitInfo(count: number) {
+    this.emitter.emit("shapeNumberChanged", count);
+  }
+
+  // shape is visible if any part of it is within canvas vertical bounds
+  private isVisible(shape: FallingShape): boolean {
+    const { height } = getCanvasSize();
+    return (
+      shape.y + shape.height / 2 > 0 && shape.y - shape.height / 2 < height
+    );
+  }
   //To do -> use it
   public destroy() {
     app.ticker.remove(this.update);
-    // this.activeShapes.forEach todo
+    this.activeShapes.forEach((shape, i) => this.releaseShape(shape, i));
     this.activeShapes = [];
   }
 }
