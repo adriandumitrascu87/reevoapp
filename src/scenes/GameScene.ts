@@ -11,6 +11,7 @@ import { ShapeSpawner } from "../spawner/ShapeSpawner";
 import { InfoPanel } from "../ui/InfoPanel";
 import { ShapeFactory } from "../factory/ShapeFactory";
 import { ControlsPanel } from "../ui/ControlsPanel";
+import { FPSMeter } from "../ui/FPSmeter";
 
 /**
  * Main game scene — owns the canvas, mask, containers and spawner
@@ -30,6 +31,7 @@ export class GameScene extends Container {
   private controlsPanel?: ControlsPanel;
   // reused every area calculation
   private renderTexture?: RenderTexture;
+  fpsMeter?: FPSMeter;
 
   constructor() {
     super();
@@ -44,6 +46,8 @@ export class GameScene extends Container {
   initUI() {
     this.infoPanel = new InfoPanel();
     this.controlsPanel = new ControlsPanel();
+    this.fpsMeter = new FPSMeter();
+    this.uiContainer?.addChild(this.fpsMeter)
     const { width, height } = getCanvasSize();
 
     this.renderTexture = RenderTexture.create({ width, height });
