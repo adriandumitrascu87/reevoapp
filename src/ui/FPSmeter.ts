@@ -23,6 +23,7 @@ export class FPSMeter extends Text {
     this.text = `FPS: ${Math.round(app.ticker.FPS)}`;
   };
 
+  //not needed for this type of project
   public destroy(): void {
     app.ticker.remove(this.update);
     super.destroy();
