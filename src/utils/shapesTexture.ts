@@ -1,11 +1,24 @@
 import { Graphics, Texture } from "pixi.js";
 import { app } from "../app";
 import { SETTINGS } from "../settings/settings";
+import { getCanvasSize } from "./screen";
 
+/**
+ * Shape drawing utilities and texture generation.
+ */
+
+// generates a unique irregular shape texture at click position
+// not cached, intended for one-off click spawns
 export function createIrregularTexture(): Texture {
+
+  const {width} = getCanvasSize();
   const graphics = new Graphics();
   const sides = 5 + Math.floor(Math.random() * 5);
-  const size = SETTINGS.shapeMinSize + Math.random() * (SETTINGS.shapeMaxSize-SETTINGS.shapeMinSize);
+
+  const minSize = SETTINGS.shapeMinSize/100 * width;
+  const maxSize = SETTINGS.shapeMaxSize/100 * width;
+
+  const size = minSize + Math.random() *(maxSize-minSize);
   const color = Math.floor(Math.random() * 0xffffff);
   const points: number[] = [];
 
@@ -23,7 +36,8 @@ export function createIrregularTexture(): Texture {
 
   return texture;
 }
-
+// draws a regular polygon centered at 0,0
+// starts at top (-PI/2 offset)
 export function drawRegularPolygon(
   g: Graphics,
   size: number,
@@ -45,7 +59,7 @@ export function drawCircle(graphics: Graphics, size: number) {
 export function drawEllipse(g: Graphics, size: number): void {
   g.ellipse(0, 0, size, size * 0.5);
 }
-
+// draws a 5-point star
 export function drawStar(g: Graphics, size: number): void {
   const points: number[] = [];
   const outerRadius = size;
