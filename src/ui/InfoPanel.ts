@@ -42,5 +42,7 @@ export class InfoPanel {
     // console.log(yPos, this.panel.getBoundingClientRect().height,this.panel.style.height );
     this.panel.style.left = `${x}px`;
     this.panel.style.top = `${yPos}px`;
+
+     this.panel.classList.remove('hidden');
   }
 }

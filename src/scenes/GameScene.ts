@@ -100,7 +100,7 @@ export class GameScene extends Container {
 
   // counts visible pixels in the masked game container
   private updateArea(): number {
-    if (!this.mask || !this.gameContainer || !this.renderTexture) return 0;
+    if (!this.canvasMask || !this.gameContainer || !this.renderTexture) return 0;
 
     let filledPixels = 0;
 

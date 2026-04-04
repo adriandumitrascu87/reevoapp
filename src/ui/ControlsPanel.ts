@@ -80,6 +80,7 @@ export class ControlsPanel {
     if (this.panel) {
       this.panel.style.left = `${x}px`;
       this.panel.style.top = `${y + height}px`;
+      this.panel.classList.remove('hidden');
     }
 
     if (!this.gravityPanel) return;
@@ -88,5 +89,6 @@ export class ControlsPanel {
     this.gravityPanel.style.position = "absolute";
     this.gravityPanel.style.left = `${width - gravityWidth}px`;
     // this.gravityPanel.style.top = `${y + height}px`;
+
   }
 }

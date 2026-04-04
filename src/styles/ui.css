@@ -17,6 +17,10 @@
   --btn-size: 50px;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 /* Info Panel */
 #info-panel {
   position: absolute;
